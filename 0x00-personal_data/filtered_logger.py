@@ -80,7 +80,7 @@ class RedactingFormatter(logging.Formatter):
     FORMAT_FIELDS = ('name', 'levelname', 'asctime', 'message')
     SEPARATOR = ";"
 
-    def __init__(self, fields):
+    def __init__(self, fields: List[str]):
         """Initializing the formatter class"""
         super(RedactingFormatter, self).__init__(self.FORMAT)
         self.fields = fields
