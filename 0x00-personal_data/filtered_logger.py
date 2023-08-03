@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Usage of regex to replace occurrences of certain values"""
+"""A module for filtering logs"""
 import re
 import logging
 import csv
@@ -8,30 +8,30 @@ import os
 from typing import List
 
 
+patterns = {
+        'extract': lambda x, y: r'(?P<field>{})=[^{}]*'.format('|'.join(x), y),
+        'replace': lambda x: r'\g<field>={}'.format(x),
+}
+PII_FIELDS = ("name", "email", "phone", "ssn", "password")
+
+
 def filter_datum(
-        fields: List[str], redaction: str, message: str, separator: str
+        fields: List[str], redaction: str, message: str, separator: str,
         ) -> str:
     """filters a log line"""
-    return re.sub(r'(' + '|'.join(fields) + r')=[^' + separator + r']*'
-                  + separator, r'\1=' + redaction + separator, message)
+    extract, replace = (patterns["extract"], patterns["replace"])
+    return re.sub(extract(fields, separator), replace(redaction), message)
 
 
 def get_logger() -> logging.Logger:
-    """Get logger details"""
+    """Creates a new logger for user data"""
     logger = logging.getLogger("user_data")
+    stream_handler = logging.StreamHandler()
+    stream_handler.setFormatter(RedactingFormatter(PII_FIELDS))
     logger.setLevel(logging.INFO)
     logger.propagate = False
-
-    formatter = RedactingFormatter(fields=PII_FIELDS)
-    stream_handler = logging.StreamHandler()
-    stream_handler.setFormatter(formatter)
-
     logger.addHandler(stream_handler)
-
     return logger
-
-
-PII_FIELDS = ("name", "email", "phone", "credit_card", "address")
 
 
 def get_db() -> mysql.connector.connection.MySQLConnection:
@@ -77,6 +77,7 @@ class RedactingFormatter(logging.Formatter):
 
     REDACTION = "***"
     FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
+    FORMAT_FIELDS = ('name', 'levelname', 'asctime', 'message')
     SEPARATOR = ";"
 
     def __init__(self, fields):
@@ -85,8 +86,11 @@ class RedactingFormatter(logging.Formatter):
         self.fields = fields
 
     def format(self, record: logging.LogRecord) -> str:
-        """formatting the fields"""
-        for field in self.fields:
-            record.msg = re.sub(rf'{field}=.*?;',
-                                rf'{field}={self.REDACTION};', record.msg)
-        return super(RedactingFormatter, self).format(record)
+        """formatting the LogRecord"""
+        msg = super(RedactingFormatter, self).format(record)
+        txt = filter_datum(self.fields, self.REDACTION, msg, self.SEPARATOR)
+        return txt
+
+
+if __name__ == "__main__":
+    main()
