@@ -12,6 +12,7 @@ def filter_datum(fields, redaction, message, separator):
     return re.sub(r'(' + '|'.join(fields) + r')=[^' + separator + r']*'
                   + separator, r'\1=' + redaction + separator, message)
 
+
 def get_logger() -> logging.Logger:
     """Get logger details"""
     logger = logging.getLogger("user_data")
@@ -26,12 +27,14 @@ def get_logger() -> logging.Logger:
 
     return logger
 
+
 PII_FIELDS = ("name", "email", "phone", "credit_card", "address")
+
 
 def get_db() -> mysql.connector.connection.MySQLConnection:
     """Creates a connector to a database"""
     db_username = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
-    db_password = os.getenv("PERSONAL_DATA_DB_PASSWORD","")
+    db_password = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
     db_host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
     db_name = os.getenv("PERSONAL_DATA_DB_NAME")
     connection = mysql.connector.connect(
@@ -42,6 +45,7 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
             database=db_name,
     )
     return connection
+
 
 def main():
     """Logs the information about user records in a table"""
@@ -80,5 +84,6 @@ class RedactingFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
         """formatting the fields"""
         for field in self.fields:
-            record.msg = re.sub(rf'{field}=.*?;', rf'{field}={self.REDACTION};', record.msg)
+            record.msg = re.sub(rf'{field}=.*?;',
+                                rf'{field}={self.REDACTION};', record.msg)
         return super(RedactingFormatter, self).format(record)
