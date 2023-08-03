@@ -3,6 +3,8 @@
 import re
 import logging
 import csv
+import mysql.connector
+import os
 
 
 def filter_datum(fields, redaction, message, separator):
@@ -46,3 +48,17 @@ def get_logger() -> logging.Logger:
     return logger
 
 PII_FIELDS = ("name", "email", "phone", "credit_card", "address")
+
+def get_db():
+    """Returns a connector to the database"""
+    db_username = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
+    db_password = os.getenv("PERSONAL_DATA_DB_PASSWORD","")
+    db_host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
+    db_name = os.getenv("PERSONAL_DATA_DB_NAME")
+
+    return mysql.connector.connect(
+            host=db_host,
+            user=db_username,
+            password=db_password,
+            database=db_name
+    )
