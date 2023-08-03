@@ -5,10 +5,13 @@ import logging
 import csv
 import mysql.connector
 import os
+from typing import List
 
 
-def filter_datum(fields, redaction, message, separator):
-    """Returns log message obfuscated"""
+def filter_datum(
+        fields: List[str], redaction: str, message: str, separator: str
+        ) -> str:
+    """filters a log line"""
     return re.sub(r'(' + '|'.join(fields) + r')=[^' + separator + r']*'
                   + separator, r'\1=' + redaction + separator, message)
 
