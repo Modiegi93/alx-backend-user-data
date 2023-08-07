@@ -1,4 +1,4 @@
-etup mysql server
+-- setup mysql server
 -- configure permissions
 CREATE DATABASE IF NOT EXISTS my_db;
 CREATE USER IF NOT EXISTS root@localhost IDENTIFIED BY 'root';
