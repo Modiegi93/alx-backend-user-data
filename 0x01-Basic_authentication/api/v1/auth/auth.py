@@ -30,7 +30,7 @@ class Auth:
                 if tmp_path == exc:
                     return False
             else:
-                if exc[:-1] == path[:l_exc -1]:
+                if exc[:-1] == path[:l_exc - 1]:
                     return False
 
         return True
