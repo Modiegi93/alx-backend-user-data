@@ -7,15 +7,14 @@ from models.user_session import UserSession
 
 class SessionDBAuth(SessionExpAuth):
     """Session in database Class"""
-    session_id = super().create_session(user_id)
-    
+
     def create_session(self, user_id=None):
         """Creation session database"""
         session_id = super().create_session(user_id)
 
         if session_id is None:
             return None
-        
+
         kwargs = {'user_id': user_id, 'session_id': session_id}
         user_session = UserSession(**kwargs)
         user_session.save()
@@ -39,7 +38,7 @@ class SessionDBAuth(SessionExpAuth):
         user_session = user_session[0]
 
         expired_time = user_session.created_at + \
-                timedelta(seconds=self.session_duration)
+            timedelta(seconds=self.session_duration)
 
         if expired_time < datetime.utcnow():
             return None
@@ -76,4 +75,3 @@ class SessionDBAuth(SessionExpAuth):
             return False
 
         return True
-
