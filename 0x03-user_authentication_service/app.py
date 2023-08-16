@@ -87,8 +87,8 @@ def reset_password() -> str:
 
     try:
         reset_token = AUTH.get_reset_password_token(email)
-        except ValueError:
-            abort(403)
+    except ValueError:
+        abort(403)
 
         response_data = {
             'email': email,
