@@ -30,7 +30,7 @@ def register_user() -> str:
 
 
 @app.route('/sessions', methods=['POST'])
-def login():
+def login() -> str:
     """Create a session for user"""
     email = request.form.get('email')
     password = request.form.get('password')
@@ -45,28 +45,36 @@ def login():
 
 
 @app.route('/sessions', methods=['DELETE'])
-def logout():
+def logout() -> str:
     """Clear the session of existing user when they logout"""
-    session_id = request.cookies.get('session_id')
+    session_id = request.cookies.get('session_id', None)
+
+    if session_id is None:
+        abort(403)
 
     user = AUTH.get_user_from_session_id(session_id)
-    if user:
-        AUTH.destroy_session(user.id)
-        return redirect('/')
-    else:
+    
+    if user is None:
         abort(403)
+
+    AUTH.destroy_session(user.id)
+    return redirect('/')
 
 
 @app.route('/profile', methods=['GET'])
-def profile():
+def profile() -> str:
     """Retrieve profile of user using session ID"""
-    session_id = request.cookies.get('session_id')
+    session_id = request.cookies.get('session_id', None)
+
+    if session_id is None:
+        abort(403)
 
     user = AUTH.get_user_from_session_id(session_id)
-    if user:
-        return jsonify(email=user.email), 200
-    else:
+    
+    if user is None:
         abort(403)
+
+    return jsonify({"email": user.email}), 200
 
 
 if __name__ == "__main__":

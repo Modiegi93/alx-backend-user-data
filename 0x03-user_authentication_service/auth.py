@@ -6,6 +6,7 @@ from bcrypt import checkpw
 from db import DB
 from user import User
 from sqlalchemy.orm.exc import NoResultFound
+from typing import Union
 
 
 def _hash_password(password: str) -> bytes:
@@ -58,16 +59,17 @@ class Auth:
         except NoResultFound:
             return None
 
-    def get_user_from_sessiom_id(self, session_id: str) -> User:
+    def get_user_from_session_id(self, session_id: str) -> Union[str, None]:
         """Retrieve the corresponding User based on session ID"""
         if session_id is None:
             return None
 
         try:
             user = self._db.find_user_by(session_id=session_id)
-            return user
         except NoResultFound:
             return None
+
+        return user
 
     def destroy_session(self, user_id: int):
         """Clear the user's session ID"""
