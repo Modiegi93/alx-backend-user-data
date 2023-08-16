@@ -90,11 +90,9 @@ def reset_password() -> str:
     except ValueError:
         abort(403)
 
-        response_data = {
-            'email': email,
-            'reset_token': reset_token
-        }
-        return jsonify(response_data), 200
+    response_data = {"email": email, "reset_token": reset_token}
+
+    return jsonify(response_data), 200
 
 
 if __name__ == "__main__":
