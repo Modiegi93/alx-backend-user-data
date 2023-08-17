@@ -8,7 +8,7 @@ BASE_URL = 'http://localhost:5000'
 def register_user(email: str, password: str) -> None:
     """register user"""
     response = requests.post(f'{BASE_URL}/users',
-                             data={'email':email, 'password': password})
+                             data={'email': email, 'password': password})
     assert response.status_code == 200
     print(response.json())
 
@@ -59,7 +59,7 @@ def update_password(email: str, reset_token: str, new_password: str) -> None:
     """Validate update password route handler"""
     response = requests.post(f'{BASE_URL}/update_password',
                              data={'email': email, 'reset_token': reset_token,
-                             'new_password': new_password})
+                                   'new_password': new_password})
     assert response.status_code == 200
     print('Password updated')
 
