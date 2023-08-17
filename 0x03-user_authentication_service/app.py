@@ -99,9 +99,9 @@ def reset_password() -> str:
 def update_password() -> str:
     """Update password with reset token"""
     try:
-        email = request.form('email')
-        reset_token = request.form('reset_token')
-        new_password = request.form('new_password')
+        email = request.form['email']
+        reset_token = request.form['reset_token']
+        new_password = request.form['new_password']
     except KeyError:
         abort(400)
 
